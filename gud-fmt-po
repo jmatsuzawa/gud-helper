@@ -1,0 +1,40 @@
+#!/bin/sh
+
+usage() {
+  CMD=`basename $0`
+  echo "Usage: $CMD POFILE"
+  echo "  Note: This command must be executed in the repository directory."
+}
+
+OPT=`getopt h "$@"`
+if [ $? -ne 0 ]; then
+  usage >&2
+  exit 1
+fi
+eval set -- "$OPT"
+while :; do
+  case "$1" in
+    -h)
+      usage
+      exit 0
+      ;;
+    --)
+      shift 1
+      break
+      ;;
+    *)
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
+PO=$1
+if [ ! -f "$PO" ]; then
+  echo "$PO: No such file" >&2
+  echo "" >&2
+  usage >&2
+  exit 1
+fi
+git cat-file -p origin/master:gnome-help/ja/ja.po | sed -n -e '1,/^$/p'
+msgmerge --no-location --no-wrap --previous -q "$PO" "$PO" | sed -e '1,/^$/d'

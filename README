@@ -1,0 +1,24 @@
+LICENSE: GPLv2+
+
+gud-fmt-po
+po を整形します。
+パッチを作成する前の整形に利用してください。
+* ヘッダー部分をorigin/masterのja.poと同一にします
+* ロケーション情報を落とし、折り返しをなくします。
+gnome-user-docs リポジトリ内のディレクトリで実行してください。
+
+$ gud-fmt-po -h
+Usage: gud-fmt-po POFILE
+  Note: This command must be executed in the repository directory.
+
+
+
+gud-add-location:
+poにロケーション情報を付与します。
+作業中にロケーション情報が必要になった場合などにご利用ください。
+gnome-user-docs リポジトリ内のgnome-helpディレクトリで実行してください。
+
+$ gud-add-location -h
+Usage: gud-add-location [POFILE]
+  If POFILE is not specified, ja/ja.po will be used.
+  Note: This command must be executed in the gnome-help directory.

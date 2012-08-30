@@ -1,0 +1,69 @@
+#!/bin/sh
+
+HELPDIR=gnome-help
+POT=gnome-help.pot
+
+usage() {
+  CMD=`basename $0`
+  echo "Usage: $CMD [POFILE]"
+  echo "  If POFILE is not specified, ja/ja.po will be used."
+  echo "  Note: This command must be executed in the $HELPDIR directory."
+}
+
+OPT=`getopt h "$@"`
+if [ $? -ne 0 ]; then
+  usage >&2
+  exit 1
+fi
+eval set -- "$OPT"
+while :; do
+  case "$1" in
+    -h)
+      usage
+      exit 0
+      ;;
+    --)
+      shift 1
+      break
+      ;;
+    *)
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
+DIR="`basename $PWD`"
+if [ x"$DIR" != x"$HELPDIR" ]; then
+  echo "Working directory is not ${HELPDIR}" >&2
+  echo "" >&2
+  usage >&2
+  exit 1
+fi
+
+PO=$1
+if [ x"$PO" = x ]; then
+  PO=ja/ja.po
+fi
+if [ ! -f "$PO" ]; then
+  echo "$PO: No such file" >&2
+  echo "" >&2
+  usage >&2
+  exit 1
+fi
+
+if [ ! -f Makefile ]; then
+  (
+    cd ../
+    ./autogen.sh
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
+  )
+fi
+make -s pot
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
+msgmerge --no-wrap --previous "$PO" "$POT"
