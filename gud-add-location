@@ -55,13 +55,13 @@ fi
 if [ ! -f Makefile ]; then
   (
     cd ../
-    ./autogen.sh
+    ./autogen.sh -q >/dev/null
     if [ $? -ne 0 ]; then
       exit 1
     fi
   )
 fi
-make -s pot
+make -s pot >/dev/null
 if [ $? -ne 0 ]; then
   exit 1
 fi
