@@ -1,14 +1,28 @@
 #!/bin/sh
 
-HELPDIR=gnome-help
-POT=gnome-help.pot
-
 usage() {
   CMD=`basename $0`
   echo "Usage: $CMD [POFILE]"
   echo "  If POFILE is not specified, ja/ja.po will be used."
   echo "  Note: This command must be executed in the $HELPDIR directory."
 }
+
+MODULE=`git remote -v | sed -n -e 's!^.*git.gnome.org.*/\([[:alnum:]+-]\{1,\}\) (fetch)$!\1!p' | head -n 1`
+case "$MODULE" in
+  gnome-user-docs)
+    HELPDIR=gnome-help
+    POT=gnome-help.pot
+    ;;
+  release-notes)
+    HELPDIR=help
+    POT=release-notes.pot
+    ;;
+  *)
+    echo "Error: The module '${MODULE}' is unknown. It must be 'gnome-user-docs' or 'release-notes'."
+    exit 1
+    ;;
+esac
+
 
 OPT=`getopt h "$@"`
 if [ $? -ne 0 ]; then

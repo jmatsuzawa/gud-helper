@@ -6,6 +6,22 @@ usage() {
   echo "  Note: This command must be executed in the repository directory."
 }
 
+MODULE=`git remote -v | sed -n -e 's!^.*git.gnome.org.*/\([[:alnum:]+-]\{1,\}\) (fetch)$!\1!p' | head -n 1`
+case "$MODULE" in
+  gnome-user-docs)
+    HELPDIR=gnome-help
+    BRANCH=origin/master
+    ;;
+  release-notes)
+    HELPDIR=help
+    BRANCH=origin/gnome-3-6
+    ;;
+  *)
+    echo "Error: The module '${MODULE}' is unknown. It must be 'gnome-user-docs' or 'release-notes'."
+    exit 1
+    ;;
+esac
+
 OPT=`getopt h "$@"`
 if [ $? -ne 0 ]; then
   usage >&2
@@ -36,5 +52,5 @@ if [ ! -f "$PO" ]; then
   usage >&2
   exit 1
 fi
-git cat-file -p origin/master:gnome-help/ja/ja.po | sed -n -e '1,/^$/p'
+git cat-file -p "${BRANCH}:${HELPDIR}/ja/ja.po" | sed -n -e '1,/^$/p'
 msgmerge --no-location --no-wrap --previous -q "$PO" "$PO" | sed -e '1,/^$/d'
